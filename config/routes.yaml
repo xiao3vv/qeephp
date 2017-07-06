@@ -1,0 +1,26 @@
+# <?php die(); ?>
+
+## 注意：书写时，缩进不能使用 Tab，必须使用空格
+
+__authkey__:
+  regex: "/auth/([a-z_A-Z0-9-]+)"
+  config:
+    authval: 1
+  defaults:
+    module: generic
+    controller: auth
+    action: index
+
+__market__:
+  pattern: /market/:controller/:action/*
+  defaults:
+    module: market
+    controller: public
+    action: index
+
+_controller_:
+  pattern: /:module/:controller/:action/*
+  defaults:
+    module: system
+    controller: portal
+    action: index

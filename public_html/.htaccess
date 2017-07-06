@@ -1,0 +1,14 @@
+# Use PHP5.3 as default
+#AddHandler application/x-httpd-php54 .php
+#Options -Indexes
+
+RewriteEngine On
+
+#RewriteCond %{HTTP_HOST} !^www\.
+#RewriteRule ^(.*)$ http://www\.%{HTTP_HOST}/$1 [R=301,L]
+
+
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php/$1

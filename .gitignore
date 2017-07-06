@@ -1,0 +1,8 @@
+*.DS_Store
+*.log
+*.txt
+*.zip
+*.tar.gz
+*.csv
+/tmp/*
+/config/app.yaml

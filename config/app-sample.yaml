@@ -1,0 +1,21 @@
+# <?php die(); ?>
+
+## 注意：书写时，缩进不能使用 Tab，必须使用空格
+# 这里的设置可以用 Q::ini('appini/设置名') 来读取，例如 Q::ini('appini/app_title');
+
+database:
+  driver:     mysql
+  host:       localhost
+  login:      xiao3
+  password:   xiao3
+  database:   xiao3
+  charset:    utf8
+  prefix:
+
+meta:
+  name: 'QeePHP'
+  title: 'QeePHP'
+  keywords: ''
+  description: ''
+  url: 'https://xiao3.org/'
+
