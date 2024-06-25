@@ -12,12 +12,13 @@ $root_dir = dirname(dirname(__FILE__));
  *
  * error_reporting(E_ALL & ~(E_STRICT | E_NOTICE));
  */
-error_reporting(E_ALL & ~(E_STRICT | E_NOTICE));
+error_reporting(E_ALL);
 
 /**
  * 应用程序配置信息
  */
-return array(
+return
+[
 
     /**
      * QeePHP 框架所在目录
@@ -65,18 +66,20 @@ return array(
     /**
      * 缓存设置
      */
-    'CONFIG_CACHE_SETTINGS' => array(
+    'CONFIG_CACHE_SETTINGS' =>
+    [
         /**
          * 由于 CONFIG_CACHE_BACKEND 指定为 QCache_File。
          * 所以这里需要为 QCache_File 指定缓存参数
          */
-        'QCache_PHPDataFile' => array(
+        'QCache_PHPDataFile' =>
+        [
             // deploy 模式缓存 86400 秒
             // devel 模式缓存 10 秒
             // 其他模式缓存 120 秒
             'life_time' => 30,
             'cache_dir' => "{$root_dir}/tmp",
-        ),
-    ),
-);
+        ],
+    ],
+];
 

@@ -13,10 +13,9 @@
 
 <div class="main_nav">
 
-    <a class="left<?php __is($_UDI, 'system::portal/index');?>" href="<?php echo url('system::portal/index');?>">系统管理</a>
+    <a class="left" href="<?php echo url('system::public/index');?>">系统管理</a>
     <span class="left">/</span>
-    <a class="left<?php __is($_UDI, 'system::portal/servers');?>" href="<?php echo url('system::portal/servers');?>">服务器监控</a>
-    <a class="right" href="<?php echo url('port::auth/remove');?>">退出</a>
+    <a class="right" href="<?php echo url('system::public/remove');?>">退出</a>
     <br class="clearfix" />
 </div>
 

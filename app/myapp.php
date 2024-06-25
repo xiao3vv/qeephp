@@ -38,25 +38,6 @@ class MyApp
          */
         if (!PHP53) set_magic_quotes_runtime(0);
 
-        // 处理被 magic quotes 自动转义过的数据
-        if (get_magic_quotes_gpc())
-        {
-            $in = array(& $_GET, & $_POST, & $_COOKIE, & $_REQUEST);
-            while (list ($k, $v) = each($in))
-            {
-                foreach ($v as $key => $val)
-                {
-                    if (! is_array($val))
-                    {
-                        $in[$k][$key] = stripslashes($val);
-                        continue;
-                    }
-                    $in[] = & $in[$k][$key];
-                }
-            }
-            unset($in);
-        }
-
         // 设置异常处理函数
         set_exception_handler(array($this, 'exception_handler'));
 
@@ -366,4 +347,13 @@ class MyApp
             return false;
         }
     }
+}
+
+function haveText($string, $params)
+{
+    if(stripos($string, strval($params)) !== false)
+    {
+        return true;
+    }
+    return false;
 }

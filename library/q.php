@@ -12,6 +12,8 @@
  */
 define('PHP_CLI', PHP_SAPI == 'cli');
 
+define("X3_SALT", 'AC*&8_sad127312');
+
 /**
  * 定义是否运行在 PHP 5.3 中
  */
@@ -1123,15 +1125,12 @@ function url($udi, $params = null, $route_name = null, array $opts = null)
 }
 
 
-
-define('SALT', 'AC*&8_sad127312');
-
-function encrypt($str,$key = SALT)
+function encrypt($str,$key = X3_SALT)
 {
     return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $str, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
 }
 
-function decrypt($str,$key = SALT)
+function decrypt($str,$key = X3_SALT)
 {
     return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, base64_decode($str), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
 }

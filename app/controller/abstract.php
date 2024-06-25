@@ -13,7 +13,14 @@ abstract class Controller_Abstract extends QController_Abstract
      *
      * @var array
      */
-    protected $_view = array();
+    protected $_view = [];
+
+    /**
+     * 控制器动作要返回的数据
+     *
+     * @var array
+     */
+    protected $_data = [];
 
     /**
      * 控制器要使用的视图类
@@ -82,6 +89,16 @@ abstract class Controller_Abstract extends QController_Abstract
             {
                 $response->assign($this->_view);
                 $this->_before_render($response);
+            }
+        }
+
+        $udi = QContext::instance()->requestUDI('array');
+
+        if(haveText($udi['action'], 'datahtml'))
+        {
+            if(is_object($response) && method_exists($response, 'fetch'))
+            {
+                return ['data' => $this->_data, 'html' => $response->fetch()];
             }
         }
 
