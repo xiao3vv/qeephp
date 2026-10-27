@@ -33,16 +33,15 @@ class QCache_PHPDataFile
         'life_time'         => 30,
         'cache_dir'         => null,
         'cache_dir_depth'   => 1,
-		'cache_dir_umask'   => 0777,
-
+        'cache_dir_umask'   => 0777,
     );
 
     /**
      * 构造函数
      *
-     * @param 默认的缓存策略 $default_policy
+     * @param ?array $default_policy
      */
-    function __construct(array $default_policy = null)
+    public function __construct(?array $default_policy = null)
     {
         //dump(debug_backtrace());
         if (!is_null($default_policy))
@@ -62,9 +61,9 @@ class QCache_PHPDataFile
      *
      * @param string $id
      * @param mixed $data
-     * @param array $policy
+     * @param ?array $policy
      */
-    function set($id, $data, array $policy = null)
+    public function set($id, $data, ?array $policy = null)
     {
         $policy = $this->_policy($policy);
         $path = $this->_path($id, $policy);
@@ -75,7 +74,7 @@ class QCache_PHPDataFile
         );
         $content = '<?php return ' . var_export($content, true) . ';';
 
-        if(get('method'))
+        if(function_exists('get') && get('method'))
         {
             #print_r($path);
             #print_r($policy);
@@ -90,14 +89,14 @@ class QCache_PHPDataFile
     }
 
     /**
-     * 读取缓存，失败或缓存撒失效时返回 false
+     * 读取缓存，失败或缓存失效时返回 false
      *
      * @param string $id
-     * @param array $policy
+     * @param ?array $policy
      *
      * @return mixed
      */
-    function get($id, array $policy = null)
+    public function get($id, ?array $policy = null)
     {
         $policy = $this->_policy($policy);
         $path = $this->_path($id, $policy);
@@ -121,9 +120,9 @@ class QCache_PHPDataFile
      * 删除指定的缓存
      *
      * @param string $id
-     * @param array $policy
+     * @param ?array $policy
      */
-    function remove($id, array $policy = null)
+    public function remove($id, ?array $policy = null)
     {
         $path = $this->_path($id, $this->_policy($policy));
         if (is_file($path)) { unlink($path); }
@@ -140,12 +139,12 @@ class QCache_PHPDataFile
     protected function _path($id, array $policy)
     {
         $filename =  'cache_' . ($id) . '_data.php';
-		$root_dir = rtrim($policy['cache_dir'], '\\/') . DIRECTORY_SEPARATOR;
-		if(!is_dir($root_dir))
-		{
-            mkdir($root_dir, $policy['cache_dir_umask'],true);
-		}
-		if ($policy['cache_dir_depth'] > 0)
+        $root_dir = rtrim($policy['cache_dir'], '\\/') . DIRECTORY_SEPARATOR;
+        if(!is_dir($root_dir))
+        {
+            @mkdir($root_dir, $policy['cache_dir_umask'], true);
+        }
+        if ($policy['cache_dir_depth'] > 0)
         {
             $hash = md5($filename);
             $root_dir .= 'cache_';
@@ -153,13 +152,12 @@ class QCache_PHPDataFile
             {
                 $root_dir .= substr($hash, 0, $i) . DIRECTORY_SEPARATOR;
                 if (is_dir($root_dir)) { continue; }
-                if (!mkdir($root_dir, $policy['cache_dir_umask'],true))
+                if (!@mkdir($root_dir, $policy['cache_dir_umask'], true))
                 {
                     #echo $root_dir . "\n";
                 }
             }
         }
-
 
         return $root_dir . $filename;
     }
@@ -167,12 +165,11 @@ class QCache_PHPDataFile
     /**
      * 返回有效的策略选项
      *
-     * @param array $policy
+     * @param ?array $policy
      * @return array
      */
-    protected function _policy(array $policy = null)
+    protected function _policy(?array $policy = null)
     {
         return !is_null($policy) ? array_merge($this->_default_policy, $policy) : $this->_default_policy;
     }
 }
-

@@ -859,7 +859,7 @@ abstract class QDB_ActiveRecord_Abstract implements QDB_ActiveRecord_Callbacks,
      *
      * @return boolean
      */
-    function offsetExists($prop_name)
+    function offsetExists($prop_name): bool
     {
         return array_key_exists($prop_name, $this->_props);
     }
@@ -870,6 +870,7 @@ abstract class QDB_ActiveRecord_Abstract implements QDB_ActiveRecord_Callbacks,
      * @param string $prop_name
      * @param mixed $value
      */
+    #[\ReturnTypeWillChange]
     function offsetSet($prop_name, $value)
     {
         $this->{$prop_name} = $value;
@@ -882,7 +883,7 @@ abstract class QDB_ActiveRecord_Abstract implements QDB_ActiveRecord_Callbacks,
      *
      * @return boolean
      */
-    function offsetGet($prop_name)
+    function offsetGet($prop_name): bool
     {
         return $this->{$prop_name};
     }
@@ -892,6 +893,7 @@ abstract class QDB_ActiveRecord_Abstract implements QDB_ActiveRecord_Callbacks,
      *
      * @param string $prop_name
      */
+    #[\ReturnTypeWillChange]
     function offsetUnset($prop_name)
     {
     	$this->{$prop_name} = null;

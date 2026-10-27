@@ -1,6 +1,6 @@
 <?php
 
-class Mails extends QDB_ActiveRecord_Abstract
+class Soul extends QDB_ActiveRecord_Abstract
 {
 
     /**
@@ -24,7 +24,7 @@ class Mails extends QDB_ActiveRecord_Abstract
             ),
 
             // 用什么数据表保存对象
-            'table_name' => 'mails',
+            'table_name' => 'soul',
 
             // 指定数据表记录字段与对象属性之间的映射关系
             // 没有在此处指定的属性，QeePHP 会自动设置将属性映射为对象的可读写属性

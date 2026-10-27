@@ -397,16 +397,13 @@ class QDB_Select
      *
      * @return QDB_Select
      */
-    function setColumnsExpr($cols = self::SQL_WILDCARD, $table = null)
+    function columns($cols = self::SQL_WILDCARD, $table = null)
     {
         if (is_null($table))
         {
             $table = $this->_getCurrentTableName();
         }
-
-        $table_name = $table ? $table: '';
-        $this->_parts[self::COLUMNS][] = array($table_name, $cols, null );
-
+        $this->_addCols($table, $cols);
         return $this;
     }
 
@@ -539,7 +536,7 @@ class QDB_Select
             else
             {
                 // LC_MSG: 关联必须是 QDB_ActiveRecord_Association_Abstract 类型.
-                throw new QDB_Select_Exception(__('关联必须是 QDB_ActiveRecord_Association_Abstract 类型.'));
+                throw new QDB_Select_Exception(__s('关联必须是 QDB_ActiveRecord_Association_Abstract 类型.'));
             }
         }
 
@@ -557,7 +554,7 @@ class QDB_Select
      *
      * @return QDB_Select
      */
-    function join($table, $cols = self::SQL_WILDCARD, $cond)
+    function join($table, $cols = self::SQL_WILDCARD, $cond = null)
     {
         $args = func_get_args();
         return $this->_join(self::INNER_JOIN, $table, $cols, $cond, array_slice($args, 3));
@@ -574,7 +571,7 @@ class QDB_Select
      *
      * @return QDB_Select
      */
-    function joinInner($table, $cols = self::SQL_WILDCARD, $cond)
+    function joinInner($table, $cols = self::SQL_WILDCARD, $cond = null)
     {
         $args = func_get_args();
         return $this->_join(self::INNER_JOIN, $table, $cols, $cond, array_slice($args, 3));
@@ -591,7 +588,7 @@ class QDB_Select
      *
      * @return QDB_Select
      */
-    function joinLeft($table, $cols = self::SQL_WILDCARD, $cond)
+    function joinLeft($table, $cols = self::SQL_WILDCARD, $cond = null)
     {
         $args = func_get_args();
         return $this->_join(self::LEFT_JOIN, $table, $cols, $cond, array_slice($args, 3));
@@ -608,7 +605,7 @@ class QDB_Select
      *
      * @return QDB_Select
      */
-    function joinRight($table, $cols = self::SQL_WILDCARD, $cond)
+    function joinRight($table, $cols = self::SQL_WILDCARD, $cond = null)
     {
         $args = func_get_args();
         return $this->_join(self::RIGHT_JOIN, $table, $cols, $cond, array_slice($args, 3));
@@ -625,7 +622,7 @@ class QDB_Select
      *
      * @return QDB_Select
      */
-    function joinFull($table, $cols = self::SQL_WILDCARD, $cond)
+    function joinFull($table, $cols = self::SQL_WILDCARD, $cond = null)
     {
         $args = func_get_args();
         return $this->_join(self::FULL_JOIN, $table, $cols, $cond, array_slice($args, 3));
@@ -678,7 +675,7 @@ class QDB_Select
         if (! isset(self::$_union_types[$type]))
         {
             // LC_MSG: 无效的 UNION 类型 "%s".
-            throw new QDB_Select_Exception(__('无效的 UNION 类型 "%s".', $type));
+            throw new QDB_Select_Exception(__s('无效的 UNION 类型 "%s".', $type));
         }
 
         foreach ($select as $target)
@@ -783,12 +780,6 @@ class QDB_Select
      */
     function order($expr)
     {
-        if($expr === false)
-        {
-            unset($this->_parts[self::ORDER]);
-            return $this;
-        }
-
         if (!is_array($expr))
         {
             $expr = array($expr);
@@ -975,17 +966,13 @@ class QDB_Select
 
         #$count = (int)$this->_conn->execute($this->__toString())->fetchOne();
 
-        if(empty($this->_parts[self::GROUP])){
-            $count = (int)$this->_conn->execute($this->__toString())->fetchOne();
-        }else{
-            $count_ar = $this->_conn->execute($this->__toString())->fetchAll();
-            $count = count($count_ar);
-        }
-
-        if(isset($_GET['debug']))
+        $sql = $this->__toString();
+        if(empty($this->_parts[self::GROUP]) && substr_count($sql, 'SELECT') < 2)
         {
-            dump($this->__toString());
-            dump($count);
+            $count = (int)$this->_conn->execute($sql)->fetchOne();
+        }else{
+            $count_ar = $this->_conn->execute($sql)->fetchAll();
+            $count = count($count_ar);
         }
 
         $this->_query_params[self::PAGED_QUERY] = false;
@@ -1350,7 +1337,7 @@ class QDB_Select
         if (! array_key_exists($part, $this->_parts))
         {
             // LC_MSG: 无效的部分名称 "%s".
-            throw new QDB_Select_Exception(__('无效的部分名称 "%s".', $part));
+            throw new QDB_Select_Exception(__s('无效的部分名称 "%s".', $part));
         }
         return $this->_parts[$part];
     }
@@ -1405,7 +1392,7 @@ class QDB_Select
      */
     function getById($id,$included_links = null){
         if ($this->_meta->idname_count !=1){
-            throw new QDB_Select_Exception(__('getById 方法只适用于单一主键模型'));
+            throw new QDB_Select_Exception(__s('getById 方法只适用于单一主键模型'));
         }
         return $this->where(array(reset($this->_meta->idname) => $id))->getOne($included_links);
     }
@@ -1502,6 +1489,7 @@ class QDB_Select
 
         if (is_null($offset) && is_null($count))
         {
+            #echo $sql;
             return $this->_conn->execute($sql);
         }
         else
@@ -1518,10 +1506,16 @@ class QDB_Select
     function __toString()
     {
         $sql = array();
-        if (strpos($this->_sql, 'SELECT') === false)
+        if (is_null($this->_sql))
         {
             $sql[] = self::SQL_SELECT;
         }
+
+        if (!is_null($this->_sql) && strpos($this->_sql, 'SELECT') === false)
+        {
+            $sql[] = self::SQL_SELECT;
+        }
+
         foreach (array_keys(self::$_parts_init) as $part)
         {
             if ($part == self::FROM)
@@ -1554,7 +1548,7 @@ class QDB_Select
             if (trim($part))
             {
                 $name = "%{$offset}%";
-                if (strpos($base_sql, $name) !== false)
+                if (!is_null($base_sql) && strpos($base_sql, $name) !== false)
                 {
                     $base_sql = str_replace($name, $part, $base_sql);
                     unset($sql[$offset]);
@@ -1597,7 +1591,7 @@ class QDB_Select
                 $method=substr($method,2);
                 $keys=explode('And',$method);
                 if (count($keys) != count($args)){
-                    throw new QDB_Select_Exception(__('参数数量不对应'));
+                    throw new QDB_Select_Exception(__s('参数数量不对应'));
                 }
                 return $this->where(array_change_key_case(array_combine($keys,$args),CASE_LOWER))->getOne();
 
@@ -1606,7 +1600,7 @@ class QDB_Select
                 $method=substr($method,5);
                 $keys=explode('And',$method);
                 if (count($keys) != count($args)){
-                    throw new QDB_Select_Exception(__('参数数量不对应'));
+                    throw new QDB_Select_Exception(__s('参数数量不对应'));
                 }
                 return $this->where(array_change_key_case(array_combine($keys,$args),CASE_LOWER))->getAll();
             }
@@ -1622,7 +1616,7 @@ class QDB_Select
         }
 
         // LC_MSG: QDB_Select 没有实现魔法方法 "%s".
-        throw new Q_NotImplementedException(__('QDB_Select 没有实现魔法方法 "%s".', $method));
+        throw new Q_NotImplementedException(__s('QDB_Select 没有实现魔法方法 "%s".', $method));
     }
 
     /**
@@ -1808,6 +1802,8 @@ class QDB_Select
             }
             $rowset[] = $obj;
         }
+
+        //$handle->free();
 
         if (empty($rowset))
         {
@@ -2145,13 +2141,13 @@ class QDB_Select
         if (! isset(self::$_join_types[$join_type]))
         {
             // LC_MSG: 无效的 JOIN 类型 "%s".
-            throw new QDB_Select_Exception(__('无效的 JOIN 类型 "%s".', $join_type));
+            throw new QDB_Select_Exception(__s('无效的 JOIN 类型 "%s".', $join_type));
         }
 
         if (count($this->_parts[self::UNION]))
         {
             // LC_MSG: 不能在使用 UNION 查询的同时使用 JOIN 查询.
-            throw new QDB_Select_Exception(__('不能在使用 UNION 查询的同时使用 JOIN 查询.'));
+            throw new QDB_Select_Exception(__s('不能在使用 UNION 查询的同时使用 JOIN 查询.'));
         }
 
         // 根据 $name 的不同类型确定数据表名称、别名

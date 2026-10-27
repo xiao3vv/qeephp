@@ -59,10 +59,6 @@ abstract class Controller_Abstract extends QController_Abstract
      */
     function execute($action_name, array $args = array())
     {
-        $this->cachedRs = Q::registry('cachedRs');
-
-        $this->_view['cachedRs'] = $this->cachedRs;
-
         // 执行指定的动作方法
         if( ($retval = $this->_before_execute()) )
         {

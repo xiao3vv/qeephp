@@ -719,7 +719,7 @@ class Q
      *
      * @return mixed 成功返回缓存内容，失败返回 false
      */
-    static function cache($id, array $policy = null, $backend_class = null)
+    static function cache($id, ?array $policy = null, $backend_class = null)
     {
         if(isset($_GET['refresh_cache']))
         {
@@ -756,7 +756,7 @@ class Q
      * @param array $policy 缓存策略
      * @param string $backend_class 要使用的缓存服务
      */
-    static function writeCache($id, $data, array $policy = null, $backend_class = null)
+    static function writeCache($id, $data, ?array $policy = null, $backend_class = null)
     {
         static $obj = null;
 
@@ -790,7 +790,7 @@ class Q
      * @param array $policy 缓存策略
      * @param string $backend_class 要使用的缓存服务
      */
-    static function cleanCache($id, array $policy = null, $backend_class = null)
+    static function cleanCache($id, ?array $policy = null, $backend_class = null)
     {
         static $obj = null;
 
@@ -895,7 +895,7 @@ class Q
     {
         if (!is_array($input))
         {
-            $input = explode($delimiter, $input);
+            $input = explode($delimiter, $input ?? '');
         }
         $input = array_map('trim', $input);
         return array_filter($input, 'strlen');
@@ -1095,7 +1095,7 @@ function dump($vars, $label = null, $return = false)
  *
  * @return string 生成的 URL 地址
  */
-function url($udi, $params = null, $route_name = null, array $opts = null)
+function url($udi, $params = null, $route_name = null, ?array $opts = null)
 {
     if($udi == '-')
     {

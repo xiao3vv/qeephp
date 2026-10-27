@@ -314,7 +314,7 @@ class QContext implements ArrayAccess
      *
      * @return boolean 参数是否存在
      */
-    function offsetExists($parameter)
+    public function offsetExists($parameter): bool
     {
         if (isset($_GET[$parameter]))
             return true;
@@ -337,7 +337,7 @@ class QContext implements ArrayAccess
      * @param string $parameter 要设置的参数
      * @param mixed $value 参数值
      */
-    function offsetSet($parameter, $value)
+    function offsetSet($parameter, $value): void
     {
         $this->changeParam($parameter, $value);
     }
@@ -353,6 +353,8 @@ class QContext implements ArrayAccess
      *
      * @return mixed 参数值
      */
+
+    #[\ReturnTypeWillChange]
     function offsetGet($parameter)
     {
         return $this->query($parameter);
@@ -369,7 +371,7 @@ class QContext implements ArrayAccess
      *
      * @param string $parameter 要取消的附加参数
      */
-    function offsetUnset($parameter)
+    function offsetUnset($parameter): void
     {
         unset($this->_params[$parameter]);
     }
@@ -1115,13 +1117,13 @@ class QContext implements ArrayAccess
      *
      * @return string 生成的 URL 地址
      */
-    function url($udi, $params = null, $route_name = null, array $opts = null)
+    function url($udi, $params = null, $route_name = null, ?array $opts = null)
     {
         static $base_uri;
 
         if (is_null($base_uri))
         {
-            if(strlen(Q::ini('base_uri')) > 0)
+            if (strlen(Q::ini('base_uri') ?? '') > 0)
             {
                 $base_uri = Q::ini('base_uri');
             }
@@ -1136,7 +1138,7 @@ class QContext implements ArrayAccess
         }
 
         $udi = $this->normalizeUDI($udi);
-        
+
         if (! is_array($params))
         {
             $arr = Q::normalize($params, '/');
@@ -1173,7 +1175,7 @@ class QContext implements ArrayAccess
             // 使用路由生成 URL
             $params = array_merge($params, $udi);
             $path = $this->_router->url($params, $route_name);
-            
+
             if (self::$_url_mode == self::URL_MODE_PATHINFO && $path != '/')
             {
                 $url .= $this->scriptName();
@@ -1184,7 +1186,7 @@ class QContext implements ArrayAccess
             }
             $url .= $path;
 
-            
+
         }
         else
         {
@@ -1204,7 +1206,6 @@ class QContext implements ArrayAccess
 
         return $url;
     }
-
     /**
      * 返回 UDI 的字符串表现形式
      *

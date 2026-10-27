@@ -377,7 +377,7 @@ class QRouter
                     if ($route['static_optional'][$pos])
                     {
                         // 对于可选的静态部分，允许不提供
-                        continue;
+                        continue 2;
                     }
                     return false;
                 }
@@ -910,7 +910,7 @@ class QRouter
         $use_static_optional = false;
         foreach ($parts as $pos => $part)
         {
-            if ($part{0} == $this->_var_prefix)
+            if ($part[0] == $this->_var_prefix)
             {
                 // 从分割后的组成部分中提取出变量名
                 $varname = substr($part, 1);

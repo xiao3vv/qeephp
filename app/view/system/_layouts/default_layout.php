@@ -14,12 +14,11 @@
 <div class="main_nav">
 
     <a class="left" href="<?php echo url('system::public/index');?>">系统管理</a>
-    <span class="left">/</span>
     <a class="right" href="<?php echo url('system::public/remove');?>">退出</a>
     <br class="clearfix" />
 </div>
 
-<?php if($_MSG):?><div class="info"><?php echo $_MSG;?></div><?php endif;?>
+<?php if(isset($_MSG) && $_MSG):?><div class="info"><?php echo $_MSG;?></div><?php endif;?>
 
 <?php $this->_block('contents'); ?><?php $this->_endblock(); ?>
 
