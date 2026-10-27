@@ -37,7 +37,7 @@ abstract class Helper_YAML
      * @return array 解析结果
      * @throw Q_FileNotFoundException
      */
-    static function loadCached($filename, array $replace = null, $cache_backend = null)
+    static function loadCached($filename, ?array $replace = null, $cache_backend = null)
     {
         static $cache_obj = null;
 
@@ -125,7 +125,7 @@ abstract class Helper_YAML
      *
      * @return array 解析结果
      */
-    static function load($filename, array $replace = null)
+    static function load($filename, ?array $replace = null)
     {
         return self::parse(file_get_contents($filename), $replace);
     }
@@ -138,7 +138,7 @@ abstract class Helper_YAML
      *
      * @return array 解析结果
      */
-    static function parse($input, array $replace = null)
+    static function parse($input, ?array $replace = null)
     {
         $parser = Q::singleton('sfYamlParser');
         $yaml = $parser->parse($input);
@@ -169,14 +169,23 @@ abstract class Helper_YAML
 
     /**
      * 替换辅助方法
+     *
+     * @param mixed $string
+     * @param mixed $key
+     * @param array $replace
      */
-    static private function _replace(& $string, $key, array $replace)
+    private static function _replace(&$string, $key, array $replace)
     {
+        // 如果传入的 $string 不是字符串或为空，直接跳过，防止 strpos 报 null 警告
+        if (!is_string($string) || $string === '') {
+            return;
+        }
+
         foreach ($replace as $macro => $value)
         {
-            if (strpos($string, $macro) !== false)
+            if (strpos($string, (string)$macro) !== false)
             {
-                $string = str_replace($macro, $value, $string);
+                $string = str_replace((string)$macro, (string)$value, $string);
                 break;
             }
         }
