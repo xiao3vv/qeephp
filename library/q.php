@@ -17,7 +17,6 @@ define("X3_SALT", 'AC*&8_sad127312');
 /**
  * 定义是否运行在 PHP 5.3 中
  */
-define('PHP53', phpversion() >= '5.3');
 
 /**
  * QeePHP 框架基本库所在路径

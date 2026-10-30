@@ -919,7 +919,7 @@ abstract class QDB_ActiveRecord_Abstract implements QDB_ActiveRecord_Callbacks,
     static function multiToJSON(array $objects, $recursion = 99, $names_style = QDB::PROP)
     {
         $arr = array();
-        while (list(, $obj) = each($objects))
+        foreach ($objects as $obj)
         {
             $arr[] = $obj->toArray($recursion, $names_style);
         }

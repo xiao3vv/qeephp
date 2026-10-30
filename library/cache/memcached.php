@@ -111,7 +111,7 @@ class QCache_Memcached {
     protected function _initMemcache() {
         $conn = new Memcache();
 
-        while (list(, $server) = each($this->_default_policy['servers'])) {
+        foreach ($this->_default_policy['servers'] as $server) {
             if (empty($server['weight'])) $server['weight'] = 100;
             if (!$conn->addServer($server['host'], $server['port'], $this->_default_policy['persistent'], $server['weight'])) {
                 throw new QCache_Exception(sprintf('Connect memcached server [%s:%s] failed!', $server['host'], $server['port']));
@@ -131,7 +131,7 @@ class QCache_Memcached {
         $conn = new Memcached();
         $conn->setOption(Memcached::OPT_COMPRESSION, (boolean)$this->_default_policy['compressed']);
 
-        while (list(, $server) = each($this->_default_policy['servers'])) {
+        foreach ($this->_default_policy['servers'] as $server) {
             if (empty($server['weight'])) $server['weight'] = 100;
             if (!$conn->addServer($server['host'], $server['port'], $server['weight'])) {
                 throw new QCache_Exception(sprintf('Connect memcached server [%s:%s] failed!', $server['host'], $server['port']));
@@ -202,7 +202,7 @@ class QCache_Memcached {
         //     $life_time = 2592000;
         // }
 
-        while (list($key, $value) = each($set)) {
+        foreach ($set as $key => $value) {
             if (!$this->_conn->set($key, $value, $compressed ? MEMCACHE_COMPRESSED : 0, $life_time)) return false;
         }
         return true;
@@ -285,7 +285,7 @@ class QCache_Memcached {
      */
     public function remove($keys) {
         if (is_array($keys)) {
-            while (list(, $key) = each($keys)) {
+            foreach ($keys as $key) {
                 $this->remove($key);
             }
         } else {

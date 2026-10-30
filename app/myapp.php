@@ -36,8 +36,6 @@ class MyApp
         /**
          * 初始化运行环境
          */
-        if (!PHP53) set_magic_quotes_runtime(0);
-
         // 设置异常处理函数
         set_exception_handler(array($this, 'exception_handler'));
 

@@ -285,7 +285,7 @@ class QDom_Element extends DOMElement implements ArrayAccess
     protected function _match($node, $nodeName, array $attributes = array()) {
         if ($node->nodeName != $nodeName) return false;
 
-        while (list($key, $value) = each($attributes)) {
+        foreach ($attributes as $key => $value) {
             if ($node->getAttribute($key) != $value) return false;
         }
 
